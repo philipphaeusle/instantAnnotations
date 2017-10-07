@@ -12,12 +12,14 @@ function getAllDS(callback) { //return data
     });
 }
 
-function getSpecificDS(){ //TODO call getAllDs and remove all without simple in front
+function getSpecificDS(){ //TODO call getAllDs and remove all without Simple in front
     getAllDS(function(data){
-      alert("one "+ data);
-      var allDS = JSON.parse(data);
-      alert("all "+allDS);
-    })
+      data.forEach(function(e) {
+          if (e.name.includes("Simple")){
+            alert(e);
+          }
+        });
+    });
   };
 
 
