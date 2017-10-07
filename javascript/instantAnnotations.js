@@ -11,25 +11,24 @@ function getAllDS(callback) { //return data
     });
 }
 
-function getSpecificDS() { //TODO call getAllDs and remove all without simple in front
+function getSpecificDS(divID) { //TODO call getAllDs and remove all without simple in front
     getAllDS(function (data) {
-        for(var i in data){
-            if(data.hasOwnProperty(i)){
-                var name = data[i]["name"].toString();
-                if(name.indexOf("Simple") !== -1){
-                    $("<p><b>" + name + "</b></p>").appendTo($("#demo"));
+      data.forEach(function(item) {
+                if(item.name.includes("Simple")){
+                    $("<p><b><h1>" + item.name + "</h1></b></p>").appendTo($(divID));
+                    item.content["dsv:class"]["0"]["dsv:property"].forEach(function(e){
+                      $("<p>" + e["schema:name"] + "</p>").appendTo($(divID));
+                    });
                 }
                 else{
-                    $("<p>" + name + "</p>").appendTo($("#demo"));
+                    $("<p><h1>" + item.name + "</h1></p>").appendTo($(divID));
                 }
-            }
-        }
+        });
     });
 }
 
 
-function create() { // TODO call getSpecificDs and create card for every object
-    getSpecificDS();
-    $('<div>test1</div>').appendTo($("#demo"));
-    $('<div>test2</div>').appendTo($("#demo"));
+function create(divID) { // TODO call getSpecificDs and create card for every object
+    getSpecificDS(divID);
+
 }
