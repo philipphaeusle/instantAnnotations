@@ -1,7 +1,6 @@
-
 var allDs;
 
-function create() {
+function create(id) {
     getSpecificDS();
 }
 
@@ -40,11 +39,12 @@ function changeSelectedDomainSpecification() {
     var dsName = ds['schema:name'].replace('Simple', '');
     var headingElement =  $('#ST2Heading'); //header element
     headingElement.html('<h4>Annotate '+ dsName +'</h4>');
-
-    ds['dsv:class'][0]['dsv:property'].forEach(function(prop){
+    //ds['dsv:class'][0]['dsv:property'].forEach(function(prop){
+      //  alert(prop['schema:name']);
         //$('<p>' + prop['schema:name'] + '</p>').appendTo($(divID));
-    });
+    //});
     console.log(ds);
+    createAnnotationForm(ds['dsv:class']['0']);
     $('#textArea').html(syntaxHighlight(JSON.stringify(ds, null, 2)));
 }
 
@@ -126,4 +126,42 @@ function strip(html) {
     var tmp = document.createElement('DIV');
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
+}
+
+function createAnnotationForm(input){
+  var bodyElementName = 'ST2Content'; // content element name
+  $('#ST2Content').html(''); //clear content first
+  $('#ST2Content').append('<div id="'+bodyElementName+'_properties_container">');
+
+  var actualClassName = input["schema:name"];
+  var propertiesArray = input["dsv:property"];
+
+  $("#ST2Content_properties_container").html(''); //clear content first
+  for(var i=0;i<propertiesArray.length;i++){
+        createPropertyInputSegment(actualClassName, propertiesArray[i], bodyElementName);
+    }
+}
+
+function createPropertyInputSegment(actualClassName, restrictedProperty, rootElementName){
+    var propertyName = restrictedProperty["schema:name"];
+    var isOptional = restrictedProperty["dsv:isOptional"];
+    var multipleValuesAllowed = restrictedProperty["dsv:multipleValuesAllowed"];
+    var containsRestrictedClass = helper_containsRestrictedClassInExpectedTypeArray(restrictedProperty);
+    $('#'+rootElementName).append('<div id="'+rootElementName+'_properties_container"><font color="red" size=5>'+propertyName +'</font></div>');
+    $('#'+rootElementName).append('<div id="'+rootElementName+'_properties_container"><font color="red" size=2>'+'optional: '+isOptional +'</font></div>');
+  if(containsRestrictedClass){
+      //TODO  restricted class
+      $('#'+rootElementName).append('<div id="'+rootElementName+name+'_properties_container"><font color="green">+isRestricted</font></div>');
+      }
+  }
+
+
+
+function helper_containsRestrictedClassInExpectedTypeArray(restrictedProperty) {
+    for(var i=0;i<restrictedProperty['dsv:expectedType'].length;i++){
+        if(restrictedProperty['dsv:expectedType'][i]['@type'] === "dsv:RestrictedClass"){
+            return true;
+        }
+    }
+    return false;
 }
